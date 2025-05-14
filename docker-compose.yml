@@ -1,0 +1,45 @@
+version: '3.8'
+
+services:
+  balancer:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    ports:
+      - "8080:8080"
+    depends_on:
+      - backend1
+      - backend2
+      - backend3
+    volumes:
+      - ./logs:/app/logs
+
+  backend1:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      - PORT=8081
+      - INSTANCE=backend1
+    ports:
+      - "8081:8081"
+
+  backend2:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      - PORT=8082
+      - INSTANCE=backend2
+    ports:
+      - "8082:8082"
+
+  backend3:
+    build:
+      context: .
+      dockerfile: backend.Dockerfile
+    environment:
+      - PORT=8083
+      - INSTANCE=backend3
+    ports:
+      - "8083:8083"
