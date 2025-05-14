@@ -1,0 +1,21 @@
+env: development  # Доступные окружения: development, production, test
+
+server:
+  port: 8080
+
+balancer:
+  backends:
+    - "http://backend1:8081"
+    - "http://backend2:8082"
+    - "http://backend3:8083"
+  strategy: round-robin  # Доступные стратегии: round-robin, random, least-connections
+
+health_checker:
+  enabled: true
+  interval: 15s       # Интервал проверки
+  path: "/health"        # Путь для проверки здоровья
+
+
+log:
+  file_path: "./logs/app.log"  # Путь к файлу логов
+  dir: "./logs"                # Директория для логов
