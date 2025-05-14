@@ -47,12 +47,17 @@ func main() {
 	}
 
 	// Создаем и запускаем фоновые процессы
+	tokenRefill := background.NewTokenRefill(
+		server.GetLimiter(),
+		cfg.RateLimiter.Interval,
+	)
 	healthChecker := background.NewHealthChecker(
 		server.GetBackends(),
 		cfg.HealthChecker.Interval,
 		cfg.HealthChecker.Path,
 	)
 
+	tokenRefill.Start(ctx)
 	healthChecker.Start(ctx)
 
 	// Канал для получения сигналов операционной системы
@@ -77,6 +82,7 @@ func main() {
 	cancel()
 
 	// Ожидаем завершения фоновых процессов
+	tokenRefill.Wait()
 	healthChecker.Wait()
 
 	// Останавливаем сервер

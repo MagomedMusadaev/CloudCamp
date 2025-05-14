@@ -2,7 +2,7 @@ package handler
 
 import (
 	"CloudCamp/internal/domain/balancerDomain"
-	"encoding/json"
+	"CloudCamp/pkg/utils"
 	"io"
 	"log/slog"
 	"net/http"
@@ -37,7 +37,11 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	backend := h.balancer.NextBackend()
 	if backend == nil {
 		slog.Warn("No backend available")
-		sendError(w, http.StatusServiceUnavailable, "No backend available")
+		utils.SendRateLimitExceeded(w,
+			http.StatusServiceUnavailable,
+			"No backend available",
+		)
+		return
 		return
 	}
 
@@ -53,7 +57,11 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
-		sendError(w, http.StatusInternalServerError, "invalid backend URL")
+		utils.SendRateLimitExceeded(w,
+			http.StatusInternalServerError,
+			"invalid backend URL",
+		)
+		return
 		return
 	}
 
@@ -65,7 +73,10 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
-		sendError(w, http.StatusInternalServerError, "Failed to create proxy request")
+		utils.SendRateLimitExceeded(w,
+			http.StatusInternalServerError,
+			"Failed to create proxy request",
+		)
 		return
 	}
 	proxyReq.Header = r.Header.Clone()
@@ -78,8 +89,12 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
+		utils.SendRateLimitExceeded(w,
+			http.StatusBadGateway,
+			"Backend request failed",
+		)
 		h.balancer.MarkBackendDown(backend)
-		sendError(w, http.StatusBadGateway, "Backend request failed")
+
 		return
 	}
 	defer proxyResp.Body.Close()
@@ -99,17 +114,4 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 		slog.String("path", r.URL.Path),
 		slog.String("backend", backend.URL),
 	)
-}
-
-// sendError отправляет ошибку в виде JSON-ответа
-func sendError(w http.ResponseWriter, code int, message string) {
-	w.Header().Set("Content-Type", "application/json")
-	w.WriteHeader(code)
-
-	errResp := ErrorResponse{
-		Code:    code,
-		Message: message,
-	}
-
-	json.NewEncoder(w).Encode(errResp)
 }

@@ -9,6 +9,7 @@ import (
 func (s *Server) setupRoutes() {
 	// Создаем обработчики
 	proxyHandler := handler.NewProxyHandler(s.balancer)
+	rateLimiterMiddleware := handler.NewRateLimiterMiddleware(s.limiter)
 
 	// Настраиваем маршруты
 	mux := http.NewServeMux()
@@ -16,6 +17,6 @@ func (s *Server) setupRoutes() {
 	// Маршрут для прокси
 	mux.HandleFunc("/", proxyHandler.ServeHTTP)
 
-	// Устанавливаем обработчик для сервера
-	s.httpServer.Handler = mux
+	// Оборачиваем все маршруты в middleware для rate limiting
+	s.httpServer.Handler = rateLimiterMiddleware.Middleware(mux)
 }

@@ -8,14 +8,28 @@ balancer:
     - "http://backend1:8081"
     - "http://backend2:8082"
     - "http://backend3:8083"
-  strategy: round-robin  # Доступные стратегии: round-robin, random, least-connections
+  strategy: round-robin         # Доступные стратегии: round-robin, random, least-connections
 
 health_checker:
   enabled: true
-  interval: 15s       # Интервал проверки
-  path: "/health"        # Путь для проверки здоровья
+  interval: 15s                 # Интервал проверки
+  path: "/health"               # Путь для проверки здоровья
 
+rate_limiter:
+  enabled: true
+  interval: 10s                 # Интервал обновления токенов (global)
+  rate: 35                      # Глобальный лимит (всего токенов)
+  period: 2m                    # Период для глобального лимита
+
+  clients:
+    client1:
+      rate: 7
+      period: 1m
+
+    client2:
+      rate: 23
+      period: 2m
 
 log:
-  file_path: "./logs/app.log"  # Путь к файлу логов
-  dir: "./logs"                # Директория для логов
+  file_path: "./logs/app.log"   # Путь к файлу логов
+  dir: "./logs"                 # Директория для логов
