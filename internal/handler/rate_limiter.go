@@ -38,7 +38,7 @@ func (m *RateLimiterMiddleware) Middleware(next http.Handler) http.Handler {
 				slog.String("client_id", clientID),
 				slog.String("client_ip", clientIP),
 			)
-			utils.SendRateLimitExceeded(w,
+			utils.SendJSON(w,
 				http.StatusTooManyRequests,
 				"Too Many Requests",
 			)

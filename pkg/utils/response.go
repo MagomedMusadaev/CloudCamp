@@ -11,8 +11,8 @@ type ErrorResponse struct {
 	Message string `json:"message"`
 }
 
-// SendRateLimitExceeded отправляет JSON-ответ
-func SendRateLimitExceeded(w http.ResponseWriter, code int, message string) {
+// SendJSON отправляет JSON-ответ
+func SendJSON(w http.ResponseWriter, code int, message string) {
 	w.Header().Set("Content-Type", "application/json")
 	w.WriteHeader(code)
 
