@@ -56,7 +56,7 @@ func (m *MemoryRateLimiter) Allow(key string) bool {
 	if !exists {
 		// Если у клиента нет бакета и глобальный лимит пройден, разрешаем запрос
 		if existsGlobal {
-			globalBucket.tokens-- // Уменьшаем глобальный счетчик
+			globalBucket.tokens--
 		}
 		return true
 	}

@@ -42,7 +42,6 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			"No backend available",
 		)
 		return
-		return
 	}
 
 	// Инкрементируем количество подключений на выбранном бэкенде
@@ -61,7 +60,6 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			http.StatusInternalServerError,
 			"invalid backend URL",
 		)
-		return
 		return
 	}
 

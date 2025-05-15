@@ -25,11 +25,11 @@ func (r *RoundRobinBalancer) NextBackend() *balancerDomain.Backend {
 	}
 
 	// Атомарно получаем текущее значение и инкрементируем его
-	current := r.current.Load()                    // Получаем текущее значение атомарно
-	next := (current + 1) % uint64(len(available)) // Вычисляем следующий индекс
+	current := r.current.Load()
+	next := (current + 1) % uint64(len(available))
 
 	// Устанавливаем новое значение
-	r.current.Store(next) // Атомарно сохраняем новый индекс
+	r.current.Store(next)
 
 	return available[next]
 }

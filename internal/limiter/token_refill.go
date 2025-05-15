@@ -12,7 +12,7 @@ func (m *MemoryRateLimiter) RefillAll() {
 
 	now := time.Now()
 	for _, bucket := range m.buckets {
-		slog.Debug("Refill bucket", bucket)
+		slog.Debug("Refill bucket", bucket) // TODO: для мониторинога работы токенов и refill
 		if bucket == nil {
 			continue
 		}
