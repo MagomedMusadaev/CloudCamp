@@ -37,7 +37,7 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 	backend := h.balancer.NextBackend()
 	if backend == nil {
 		slog.Warn("No backend available")
-		utils.SendRateLimitExceeded(w,
+		utils.SendJSON(w,
 			http.StatusServiceUnavailable,
 			"No backend available",
 		)
@@ -57,7 +57,7 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
-		utils.SendRateLimitExceeded(w,
+		utils.SendJSON(w,
 			http.StatusInternalServerError,
 			"invalid backend URL",
 		)
@@ -73,7 +73,7 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
-		utils.SendRateLimitExceeded(w,
+		utils.SendJSON(w,
 			http.StatusInternalServerError,
 			"Failed to create proxy request",
 		)
@@ -89,7 +89,7 @@ func (h *ProxyHandler) ServeHTTP(w http.ResponseWriter, r *http.Request) {
 			slog.String("backend", backend.URL),
 			slog.String("error", err.Error()),
 		)
-		utils.SendRateLimitExceeded(w,
+		utils.SendJSON(w,
 			http.StatusBadGateway,
 			"Backend request failed",
 		)
